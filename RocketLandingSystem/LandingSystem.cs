@@ -6,30 +6,27 @@
         private const string s_OutOfPlatform = "out of platform";
         private const string s_Clash = "clash";
 
-        public Area LandingArea { get; set; }
-        public Area LandingPlatform { get; set; }
-        public Position? LastCheckedPosition { get; set; }
+        private Area _landingPlatform;
+        private Position? LastCheckedPosition { get; set; }
 
-        public LandingSystem() : this(new Position(0, 0), 1) { }
+        public Area LandingPlatform 
+        { 
+            get { return _landingPlatform; }
+            set
+            {
+                Validation.ValidateLandingPlatform(value.TopLeftCorner, value.Length);
+                _landingPlatform = value;
+            } 
+        }
+
+        public LandingSystem() : this(new Position(5, 5), 10) { }
         public LandingSystem(int topLeftLandingPlatformX, int topLeftLandingPlatformY, int landingPlatformLength)
                             : this(new Position(topLeftLandingPlatformX, topLeftLandingPlatformY), landingPlatformLength) { }
         public LandingSystem(Position topLeftLandingPlatform, int landingPlatformLength)
         {
-            if (topLeftLandingPlatform == null)
-                throw new ArgumentNullException(nameof(topLeftLandingPlatform), "The top, left corner of the landing platform must be defined!");
+            Validation.ValidateLandingPlatform(topLeftLandingPlatform, landingPlatformLength);
 
-            if (topLeftLandingPlatform.X < 0 || topLeftLandingPlatform.Y < 0 ||
-                topLeftLandingPlatform.X > 99 || topLeftLandingPlatform.Y > 99)
-                throw new ArgumentOutOfRangeException(nameof(topLeftLandingPlatform), "The top, left corner of the landing platform must be within the landing area.");
-
-            if (landingPlatformLength <= 0)
-                throw new ArgumentOutOfRangeException(nameof(landingPlatformLength), "Invalid length for the landing platform. The length of the landing platform must be at least 1 unit long.");
-
-            if (topLeftLandingPlatform.X + landingPlatformLength > 100 || topLeftLandingPlatform.Y + landingPlatformLength > 100)
-                throw new ArgumentException("The landing platform must fit in the landing area!");
-
-            LandingArea = new Area(new Position(0, 0), 100);
-            LandingPlatform = new Area(topLeftLandingPlatform, landingPlatformLength);
+            _landingPlatform = new Area(topLeftLandingPlatform, landingPlatformLength);
         }
         
 
